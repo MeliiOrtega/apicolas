@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ProcessPodcast implements ShouldQueue
 {
@@ -25,7 +26,6 @@ class ProcessPodcast implements ShouldQueue
      */
     public function handle(): void
     {
-        //
-        echo "Job trabajando <br>";
+        echo "Job trabajando!!! <br>";
     }
 }
