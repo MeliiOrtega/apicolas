@@ -1,37 +1,41 @@
-# Usar una imagen base de PHP con Apache
+# Utiliza la imagen oficial de PHP 8.1 con Apache
 FROM php:8.1-apache
+
+# Configura las variables de entorno
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
+    git \
     unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
+    libzip-dev \
+    libonig-dev \
+    libpng-dev \
+    libmcrypt-dev \
+    zip \
+    curl \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd
+
+# Habilitar mod_rewrite de Apache
+RUN a2enmod rewrite
+
+# Cambia el directorio raíz de Apache a la carpeta public de Laravel
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Establecer el directorio de trabajo
+# Establece el directorio de trabajo en /var/www/html
 WORKDIR /var/www/html
 
-# Copiar los archivos del proyecto
+# Copia los archivos de la aplicación a la imagen
 COPY . .
 
-# Ajustar permisos
-RUN chown -R www-data:www-data /var/www/html \
-    && a2enmod rewrite
+# Instalar las dependencias de Composer
+RUN composer install --no-dev --optimize-autoloader
 
-# Instalar dependencias de Laravel
-RUN composer install --no-interaction --optimize-autoloader
+# Permisos para las carpetas de almacenamiento y caché
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configurar el archivo de entorno
-COPY .env.example .env
-RUN php artisan key:generate
-
-# Comando por defecto
+# Comando para iniciar Apache
 CMD ["apache2-foreground"]
