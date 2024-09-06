@@ -1,0 +1,21 @@
+#
+php artisan make:job Nombre  aqui podemos crear que info se va a ir a la cola
+
+Ejemplo: Crear onQueue('procesar_pago_linea')
+Este debe almacenar el cod_empresa y el id_transaccion
+
+En la api va a llegar las respuestas de los botones y esa se va a guardar en mongo
+
+La api de colas va a enviar el cod_empresa y el id_transaccion a la api para que haga
+el proceso de facturación y comprobante de ingreso
+
+
+
+# LA API DE COLAS SE DEBE CREAR UN WORK QUE SE EJECUTE CADA 5 MIN
+DEBE TRAERME LOS PENDIENTES Y CON ESTADO EN COLA FALSE
+
+VA A RECORRER CADA UNO Y ACTUALIZAR EL MONGO CON ESTADO EN COLA
+
+Debe ir a la api y traer 10 registros pendientes
+Este debe traer 10 registros pendientes y meterlos en la cola
+La cola debe verficar el estado de cada uno, en caso que haya

@@ -27,5 +27,6 @@ class ProcessPodcast implements ShouldQueue
     public function handle(): void
     {
         echo "Job trabajando!!! <br>";
+        Log::info("Hola");
     }
 }
