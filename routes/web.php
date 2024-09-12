@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Colecturia\ProcesarPagoLineaController;
 use Illuminate\Support\Facades\Route;
 use App\Jobs\ProcessPodcast;
 
@@ -20,3 +21,5 @@ Route::get('/', function () {
     ProcessPodcast::dispatch()->onQueue('secondary');
     return response("fin"); //view('welcome');
 });
+
+// Route::post('/procesar-pago-linea', [ProcesarPagoLineaController::class, 'procesar'] );
