@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libmongoc-dev \
     libbson-dev \
-    cron \
     && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd soap intl \
     # Instala la extensión de MongoDB usando pecl
     && pecl install mongodb \
@@ -45,9 +44,5 @@ RUN composer install --no-dev --optimize-autoloader
 # Permisos para las carpetas de almacenamiento y caché
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Copia el archivo crontab al cron.d y da permisos
-COPY ./crontab /etc/cron.d/crontab
-RUN chmod 0644 /etc/cron.d/crontab
-
-# Inicia cron y Apache
-CMD ["sh", "-c", "cron && apache2-foreground"]
+# Comando para iniciar Apache
+CMD ["apache2-foreground"]

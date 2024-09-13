@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -9,28 +10,18 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
-class ProcesarTransaccion implements ShouldQueue
+class RevisarOrdenPago implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    // Número máximo de intentos
-    public $tries = 3;
-
-    // Tiempo de espera antes de reintentar (en segundos)
-    // public $backoff = 5;
-
     protected $idTransaccion;
-    protected $datosCorreo;
-
     /**
      * Create a new job instance.
      */
-    public function __construct($idTransaccion, $datosCorreo)
+    public function __construct($idTransaccion)
     {
         $this->idTransaccion = $idTransaccion;
-        $this->datosCorreo = $datosCorreo;
     }
 
     /**
@@ -39,9 +30,9 @@ class ProcesarTransaccion implements ShouldQueue
     public function handle(): void
     {
         try {
-            Log::info('Ejecutando el Job con idTransaccion: ' . $this->idTransaccion);
+            Log::info('Ejecutando el Job de RECEPCION con idTransaccion: ' . $this->idTransaccion);
 
-            $url = env('API_ACADEMICO') . 'padres/pago-linea/facturar/' . $this->idTransaccion;
+            $url = env('API_ACADEMICO') . 'padres/pago-linea/validar/' . $this->idTransaccion;
 
             // Validar que la URL esté bien formada
             if (empty(env('API_ACADEMICO'))) {
@@ -76,36 +67,7 @@ class ProcesarTransaccion implements ShouldQueue
             // Log de respuesta exitosa
             Log::info('Respuesta de la API: ', (array) $respuesta);
         } catch (Exception $e) {
-            // Log de error con mensaje detallado
-            Log::error('Error procesando la transacción: ' . $e->getMessage(), [
-                'idTransaccion' => $this->idTransaccion,
-            ]);
-
-            // Relanzar la excepción para permitir los reintentos
-            throw $e;
+            
         }
-    }
-
-    /**
-     * Handle a job failure.
-     */
-    public function failed(Exception $exception): void
-    {
-        Log::error('El Job falló después de varios intentos: ' . $exception->getMessage(), [
-            'idTransaccion' => $this->idTransaccion,
-        ]);
-
-        // Enviar un correo en caso de fallo
-        // Puedes usar Mail::to($this->datosCorreo['email'])->send(new ErrorNotificacion($this->datosCorreo));
-    }
-
-    /**
-     * Calculate the number of seconds to wait before retrying the job.
-     *
-     * @return array<int, int>
-     */
-    public function backoff(): array
-    {
-        return [1, 10, 15]; // Retrasos progresivos
     }
 }

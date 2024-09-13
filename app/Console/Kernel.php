@@ -12,7 +12,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        if (app()->environment('local')) {
+            $schedule->command('app:revisar-ordenes-pago-linea')->everyFiveMinutes();
+        } else {
+            $schedule->command('app:revisar-ordenes-pago-linea')->dailyAt('00:00');
+        }
     }
 
     /**
@@ -24,4 +28,8 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
+    protected $commands = [
+        \App\Console\Commands\RevisarOrdenesPagoLinea::class,
+    ];
 }

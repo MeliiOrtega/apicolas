@@ -69,6 +69,17 @@ return [
             'retry_after' => 90,
             'block_for' => null,
             'after_commit' => false,
+
+            'queues' => [
+                'transacciones' => [
+                    'connection' => 'default',
+                    'queue' => 'transacciones', // Cola para transacciones
+                ],
+                'ordenes' => [
+                    'connection' => 'default',
+                    'queue' => 'ordenes', // Cola para revisiones
+                ],
+            ],
         ],
 
     ],

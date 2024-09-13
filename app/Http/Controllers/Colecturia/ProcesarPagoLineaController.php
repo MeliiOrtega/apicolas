@@ -28,12 +28,12 @@ class ProcesarPagoLineaController extends Controller
             Log::info($request->all());
             $this->idTransaccion = $request->input('idTransaccion');
             $datosCorreo = $request->input('datosCorreo');
-            Log::info([$this->idTransaccion, $datosCorreo]);
+            Log::info([$this->idTransaccion, "LLEGO TRANSACCION A LA COLA"]);
             if (!$this->idTransaccion) {
                 $this->et->existeError = true;
                 $this->et->mensaje =  'No es posible continuar, falta número de transacción';
             }else{
-                ProcesarTransaccion::dispatch($this->idTransaccion, $datosCorreo);
+                ProcesarTransaccion::dispatch($this->idTransaccion, $datosCorreo)->onQueue('transacciones');
             }
         } catch (\Throwable $th) {
             $this->et->existeError = true;

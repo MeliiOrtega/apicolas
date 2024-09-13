@@ -9,13 +9,7 @@ services:
       - "8091:80"
     volumes:
       - .:/var/www/html
-    # environment:
-    #   - APP_ENV=local
-    #   - APP_DEBUG=true
-    #   - APP_KEY=base64:...
-    #   - CACHE_DRIVER=redis
-    #   - SESSION_DRIVER=redis
-    #   - QUEUE_CONNECTION=redis
+    # command: php artisan schedule:run
     depends_on:
       - redis
     networks:
@@ -24,6 +18,30 @@ services:
   redis:
     image: redis:alpine
     container_name: redis-server
+    networks:
+      - app-network
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-scheduler
+    volumes:
+      - .:/var/www/html
+    command: sh -c "while true; do php artisan schedule:run; sleep 60; done"
+    depends_on:
+      - redis
+    networks:
+      - app-network
+  queue-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-queue-worker
+    volumes:
+      - .:/var/www/html
+    command: php artisan queue:work --queue=ordenes
+    depends_on:
+      - redis
     networks:
       - app-network
 networks:
