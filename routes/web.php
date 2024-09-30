@@ -16,10 +16,5 @@ use App\Jobs\ProcessPodcast;
 */
 
 Route::get('/', function () {
-    ProcessPodcast::dispatchAfterResponse();
-    ProcessPodcast::dispatch();
-    ProcessPodcast::dispatch()->onQueue('secondary');
-    return response("fin"); //view('welcome');
+    return view('welcome');
 });
-
-// Route::post('/procesar-pago-linea', [ProcesarPagoLineaController::class, 'procesar'] );

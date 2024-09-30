@@ -39,9 +39,10 @@ class ProcesarTransaccion implements ShouldQueue
     public function handle(): void
     {
         try {
-            Log::info('Ejecutando el Job con idTransaccion: ' . $this->idTransaccion);
+            $intento = $this->attempts();
+            Log::info('Ejecutando el Job TRANSACCION con idTransaccion: ' . $this->idTransaccion);
 
-            $url = env('API_ACADEMICO') . 'padres/pago-linea/facturar/' . $this->idTransaccion;
+            $url = env('API_ACADEMICO') . 'padres/pago-linea/facturar/' . $this->idTransaccion . '/' . $intento .'/'. $this->tries;
 
             // Validar que la URL esté bien formada
             if (empty(env('API_ACADEMICO'))) {

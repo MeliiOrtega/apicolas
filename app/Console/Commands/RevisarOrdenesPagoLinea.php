@@ -40,7 +40,7 @@ class RevisarOrdenesPagoLinea extends Command
 
             // Procesa cada orden de pago
             foreach ($datos as $dato) {
-                Log::info('Procesando transacción ID: ' . $dato['idTransaccion']);
+                Log::info('Transaccion del mongo a cola: ' . $dato['idTransaccion']);
 
                 // Despacha el job para revisar la orden de pago
                 RevisarOrdenPago::dispatch($dato['idTransaccion'])->onQueue('ordenes');
