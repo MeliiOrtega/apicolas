@@ -22,6 +22,8 @@ services:
     restart: always
     networks:
       - app-network
+    volumes:
+      - ../redis:/data
   scheduler:
     build:
       context: .
